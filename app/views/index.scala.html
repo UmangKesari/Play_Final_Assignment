@@ -1,0 +1,18 @@
+@()
+
+@import helper._
+
+@main("Knoldus") {
+  <h1>Knoldus !</h1>
+
+@helper.form(action=routes.LogInController.login()){
+<button class="btn-lg" value="">Login</button>
+}
+
+</br>
+</br>
+
+@helper.form(action=routes.SignUpController.signUp){
+<button class="btn-lg">Register</button>
+}
+}

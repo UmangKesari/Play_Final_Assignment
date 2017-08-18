@@ -1,0 +1,42 @@
+@(userProfileData: Form[UserProfileFill])(implicit messages:Messages, flash: Flash, session: play.api.mvc.Session)
+
+@import helper._
+
+@main("After Login view "){
+
+@if(userProfileData.hasGlobalErrors) {
+<div style="background: red">
+    <ul>
+        @for(error <- userProfileData.globalErrors) {
+        <li>@Messages(error.messages,error.args)</li>
+        }
+    </ul>
+</div>
+
+<div style="background: red">
+    @flash.get("success").getOrElse("")
+</div>
+
+<h3>Welcome !</h3>
+@if(session("isAdmin") == "true"){
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li><a href="@routes.CommonController.home()">Profile</a></li>
+            <li><a href="@routes.AdminController.displayUsers()">Users</a></li>
+            <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
+            <li><a href="@routes.AdminController.addAssignment()">Add Assignments</a></li>
+        </ul>
+    </div>
+</nav>
+}else {
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li><a href="@routes.CommonController.home()">Profile</a></li>
+            <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
+        </ul>
+    </div>
+</nav>
+}
+

@@ -1,0 +1,54 @@
+@(assignmentsDb:List[AssignmentDb])(implicit messages:Messages,session: play.api.mvc.Session)
+@import helper._
+
+@main("List of Assignments " ){
+
+@if(session("isAdmin")=="true"){
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li><a href="@routes.CommonController.home()">Profile</a></li>
+            <li><a href="@routes.AdminController.displayUsers()">Users</a></li>
+            <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
+            <li><a href="@routes.AdminController.addAssignment()">Add Assignments</a></li>
+        </ul>
+    </div>
+</nav>
+}else{
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li><a href="@routes.CommonController.home()">Profile</a></li>
+            <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
+        </ul>
+    </div>
+</nav>
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>Assignment name</th>
+        <th>Assignment description</th>
+        @if(session.get("isAdmin").getOrElse("false") == "true"){
+        <th>Delete Assignments</th>
+        }
+    </tr>
+    <tbody>
+    @for(assignment<- assignmentDb){
+    @helper.form(action = routes.CommonController.deleteAssignment(assignment.assign_id)){
+    <tr>
+        <td>@assignment.title</td>
+        <td>@assignment.description</td>
+        @if(session.get("isAdmin").getOrElse("false") == "true"){
+        <td>
+            <form>
+                <button class="btn-danger" type="submit">DELETE</button>
+            </form>
+        </td>
+        }
+        }
+    </tr>
+    }
+    </tbody>
+</table>
+}

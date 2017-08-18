@@ -1,0 +1,47 @@
+@(userList : List[UserList]) (implicit messages:Messages,session: play.api.mvc.Session)
+
+@import helper._
+
+@main("List of Registered user"){
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li><a href="@routes.CommonController.home()">Profile</a></li>
+            <li><a href="@routes.AdminController.displayUsers()">Users</a></li>
+            <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
+            <li><a href="@routes.AdminController.addAssignment()">Add Assignments</a></li>
+        </ul>
+    </div>
+</nav>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <th>User email</th>
+        <th>Permissions</th>
+    </tr>
+
+    <tbody>
+    @for(user <- userList){
+    @helper.form(action = routes.AdminController.enableDisableUser(user.email,user.isEnable)){
+    <td>@user.firstName @user.middleName @user.lastName</td>
+    <td>@user.email</td>
+    @if(session("isAdmin")){
+    <td>
+        <form>
+            @if(user.isEnable){
+            <button class="btn-danger">DISABLE</button>
+            } else {
+            <button class="btn-success">ENABLE</button>
+            }
+        </form>
+    </td>
+    }
+    }
+    </tr>
+    }
+    </tbody>
+</table>
+}
+

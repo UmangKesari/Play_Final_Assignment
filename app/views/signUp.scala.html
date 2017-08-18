@@ -1,0 +1,33 @@
+@(userSignUpData : Form[SignUp])(implicit messages : Messages)
+
+@import helper._
+
+@main("Registration Form"){
+<h3>Registration Here!</h3>
+
+@if(userSignUpData.hasGlobalErrors) {
+<div style="background: red">
+    <ul>
+        @for(error <- userSignUpData.globalErrors) {
+        <li>@Messages(error.messages,error.args)</li>
+        }
+    </ul>
+</div>
+}
+
+@helper.form(action = routes.SignUpController.signUpBinding()){
+
+@helper.inputText(userSignUpData("firstName"),  '_showConstraints -> false, '_label -> "FirstName")
+@helper.inputText(userSignUpData("middleName"), '_showConstraints -> false, '_label -> "MiddleName")
+@helper.inputText(userSignUpData("lastName"),   '_showConstraints -> false, '_label -> "LastName")
+@helper.inputText(userSignUpData("email"),      '_showConstraints -> false, '_label -> "E-mail")
+@helper.inputText(userSignUpData("mobileNumber"),   '_showConstraints -> false, '_label -> "Mobile Number")
+@helper.inputText(userSignUpData("gender"),options = Seq("male"->"male","female"->"female"), '_showConstraints -> false, '_label -> "Gender")
+@helper.inputText(userSignUpData("password"),'_showConstraints -> false, '_label -> "Password")
+@helper.inputText(userSignUpData("confirmPassword"),'_showConstraints -> false, '_label -> "Confirm Password")
+
+<button type="submit">Submit</button>
+
+}
+
+}

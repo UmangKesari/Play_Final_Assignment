@@ -1,0 +1,24 @@
+@(userLogInData : Form[LogIn])(implicit  messages: Messages)
+
+@import helper._
+
+@main("Welcome !"){
+<div>
+    @flash.get("error").getOrElse(flash.get("success").getOrElse(""))
+</div>
+
+@helper.form(action = routes.LogInController.logInBinding()){
+
+@helper.inputText(userLogInData("email"), '_showConstraints -> false, '_label -> "E-mail")
+@helper.inputPassword(userLogInData("password"), '_showConstraints -> false, '_label -> "Password")
+
+<button type = "submit"> Submit</button>
+}
+</br>
+</br>
+
+<form>
+    <button type="submit" formaction="@routes.LogInController.updatePassword()">Forgot Password</button>
+</form>
+
+}
