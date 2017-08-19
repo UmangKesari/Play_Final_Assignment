@@ -1,11 +1,14 @@
-@(assignmentDb: Form[AssignmentDb])(implicit messages:Messages)
+@(assignmentDb: Form[Assignment])(implicit messages:Messages)
 @import helper._
 
 @main("Adding Assignment"){
 
 @helper.form(action = routes.AdminController.addAssignmentBinding()){
-@helper.inputText(addAssignmentForm("title"),'_label->"Title",'_showConstraints->false)
-@textarea(field = addAssignmentForm("description"),args = 'rows -> 7, 'cols -> 50 ,'_showConstraints->false,'_label->"Description")
+@helper.inputText(assignmentDb("title"),'_label->"Title",'_showConstraints->false)
+@textarea(field = assignmentDb("description"),args = 'rows -> 7, 'cols -> 50 ,'_showConstraints->false,'_label->"Description")
 <button type= "submit">Add assignment</button>
+<br>
+<br>
+<button type= "submit" formaction="@routes.CommonController.showProfileData()" formmethod="get">Home</button>
 }
 }

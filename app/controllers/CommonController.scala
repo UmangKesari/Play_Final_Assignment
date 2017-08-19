@@ -2,8 +2,9 @@ package controllers
 
 import javax.inject._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import com.google.inject.Singleton
-import models.{AssignmentRepository, UserDb, UserRepository, UserWithoutPassword}
+import models.{AssignmentRepository, UpdateUserDb, UserRepository}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Controller, Request}
@@ -22,13 +23,13 @@ class CommonController @Inject()(val messagesApi: MessagesApi, userRepository: U
     request.session.get("email").fold(Future.successful(Redirect(routes.HomeController.index()))) {
       email =>
         val userData = userRepository.getUserData(email)
-        userData.flatMap {
+        userData.map {
           case Some(userData) =>
             Ok(views.html.userOrAdmin(userProfileFill.userProfileForm.fill(UserProfile(
-              userData.firstName, userData.middleName, userData.lastName, userData.mobileNumber))))
+              userData.firstName, userData.middleName, userData.lastName, userData.mobileNumber,userData.gender))))
 
           case None =>
-            Future.successful(Redirect(routes.SignUpController.signUp()))
+            Redirect(routes.SignUpController.signUp())
         }
     }
   }
@@ -53,7 +54,7 @@ class CommonController @Inject()(val messagesApi: MessagesApi, userRepository: U
         Logger.info("At delete assignment")
         request.session("isAdmin") match {
           case "false" =>
-            Future.successful(Redirect(routes.CommonController.home()))
+            Future.successful(Redirect(routes.CommonController.showProfileData()))
           case "true" =>
             Logger.info("Removing assignment with id " + assignmentId)
             val remove = assignmentRepository.removeAssignment(assignmentId)
@@ -74,19 +75,19 @@ class CommonController @Inject()(val messagesApi: MessagesApi, userRepository: U
         userProfileFill.userProfileForm.bindFromRequest.fold(
           formWithErrors => {
             Logger.error("Form With Errors" + formWithErrors)
-            BadRequest(views.html.userOrAdmin(formWithErrors))
+            Future.successful(BadRequest(views.html.userOrAdmin(formWithErrors)))
           },
           modifiedUserData => {
             Logger.info("Updating your Data " + modifiedUserData)
-            val updateUserData = userRepository.updateUserData(UserDb(
+            val updateUserData = userRepository.updateUserProfile(UpdateUserDb(
               modifiedUserData.firstName, modifiedUserData.middleName, modifiedUserData.lastName,
-              modifiedUserData.mobileNumber))
+              modifiedUserData.mobileNumber),email)
             updateUserData.map{
               case false => Ok("Something went wrong, Try again")
-              case true => Redirect(routes.CommonController.addAssignment())
+              case true => Redirect(routes.CommonController.showProfileData())
 
             }
-          }
-    })
+          })
+    }
   }
 }

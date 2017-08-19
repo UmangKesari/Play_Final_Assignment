@@ -9,7 +9,7 @@ import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.mvc._
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
@@ -17,16 +17,16 @@ import scala.concurrent.Future
   * application's home page.
   */
 class LogInController @Inject()(userRepository: UserRepository, val messagesApi: MessagesApi,
-                                logInFill: LogInFill) extends Controller with I18nSupport {
+                                logInFill: LogInFill,updatePasswordFill: UpdatePasswordFill) extends Controller with I18nSupport {
 
 
-  implicit val message = messagesApi
+  implicit val messages = messagesApi
 
   def login(): Action[AnyContent] = Action { implicit request =>
-    Ok(views.html.login(logInFill.logInForm))
+    Ok(views.html.logIn(logInFill.logInForm))
   }
 
-  def logInBinding() :Action[AnyContent] =Action.async{
+  def logInBinding() :Action[AnyContent] =Action.async{ implicit request =>
     logInFill.logInForm.bindFromRequest.fold(
       formWithErrors =>{
         Logger.info("Login error " +formWithErrors)
@@ -36,16 +36,16 @@ class LogInController @Inject()(userRepository: UserRepository, val messagesApi:
         val userInfo = userRepository.getUserData(logInData.email)
 
         userInfo.map {
-          case Some(userDb: UserDb) =>
-            if(logInData.password === userDb.password && userDb.isEnable)
+          case Some(userDb) =>
+            if(logInData.password == userDb.password && userDb.isEnable)
             {
               Logger.info( s"Welcome ${userDb.firstName} ${userDb.lastName}")
-              Redirect(routes.UserLogIn.home()).flashing("success" -> "Successful Login").withSession(
+              Redirect(routes.CommonController.showProfileData()).flashing("success" -> "Successful Login").withSession(
                 "email" -> userDb.email, "isAdmin" -> s"${userDb.isAdmin}")
             }
             else
             {
-              Logger.error(" Error in logIn " +user.email)
+              Logger.error(" Error in logIn " +userDb.email)
               Redirect(routes.LogInController.login()).flashing("error" -> "log in error")
             }
 
@@ -59,11 +59,11 @@ class LogInController @Inject()(userRepository: UserRepository, val messagesApi:
   }
 
   def updatePassword() :Action[AnyContent] = Action{ implicit request =>
-    Ok(views.html.updatePassword(logInFill.updatePasswordForm))
+    Ok(views.html.updatePassword(updatePasswordFill.updatePasswordForm))
   }
 
-  def updatePasswordBinding(): Action[AnyContent] =Action.async {
-    logInFill.updatePasswordForm.bindFromRequest.fold(
+  def updatePasswordBinding(): Action[AnyContent] =Action.async { implicit request =>
+    updatePasswordFill.updatePasswordForm.bindFromRequest.fold(
       formWithError => {
         Logger.error("updating password error" +formWithError)
         Future.successful(BadRequest(views.html.updatePassword(formWithError)))

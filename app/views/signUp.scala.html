@@ -22,7 +22,7 @@
 @helper.inputText(userSignUpData("lastName"),   '_showConstraints -> false, '_label -> "LastName")
 @helper.inputText(userSignUpData("email"),      '_showConstraints -> false, '_label -> "E-mail")
 @helper.inputText(userSignUpData("mobileNumber"),   '_showConstraints -> false, '_label -> "Mobile Number")
-@helper.inputText(userSignUpData("gender"),options = Seq("male"->"male","female"->"female"), '_showConstraints -> false, '_label -> "Gender")
+@helper.select(userSignUpData("gender"),options = Seq("male"->"male","female"->"female"), '_showConstraints -> false, '_label -> "Gender")
 @helper.inputText(userSignUpData("password"),'_showConstraints -> false, '_label -> "Password")
 @helper.inputText(userSignUpData("confirmPassword"),'_showConstraints -> false, '_label -> "Confirm Password")
 

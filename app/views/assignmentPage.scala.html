@@ -7,10 +7,10 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><a href="@routes.CommonController.home()">Profile</a></li>
-            <li><a href="@routes.AdminController.displayUsers()">Users</a></li>
+            <li><a href="@routes.CommonController.showProfileData()">Profile</a></li>
+            <li><a href="@routes.AdminController.listOfUsers()">Users</a></li>
             <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
-            <li><a href="@routes.AdminController.addAssignment()">Add Assignments</a></li>
+            <li><a href="@routes.AdminController.addAssignment()">Add Assignment</a></li>
         </ul>
     </div>
 </nav>
@@ -18,7 +18,7 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><a href="@routes.CommonController.home()">Profile</a></li>
+            <li><a href="@routes.CommonController.showProfileData()">Profile</a></li>
             <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
         </ul>
     </div>
@@ -34,7 +34,7 @@
         }
     </tr>
     <tbody>
-    @for(assignment<- assignmentDb){
+    @for(assignment<- assignmentsDb){
     @helper.form(action = routes.CommonController.deleteAssignment(assignment.assign_id)){
     <tr>
         <td>@assignment.title</td>

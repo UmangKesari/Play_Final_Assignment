@@ -3,21 +3,20 @@ package controllers
 import com.google.inject.{Inject, Singleton}
 import models.{UserDb, UserRepository}
 import play.api.Logger
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, Request}
-import play.mvc.BodyParser.AnyContent
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, Controller, Request}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
 class SignUpController @Inject()(userRepository: UserRepository, signUpFill: SignUpFill,
-                                 val messagesApi: MessagesApi) {
+                                 val messagesApi: MessagesApi) extends Controller with I18nSupport{
 
   implicit val messages = messagesApi
 
-  def signUp(): Action[AnyContent] = Action.async {
-    implicit request =>
-      Ok(views.html.signup(signUpFill.userSignUpFormConstraints))
+  def signUp(): Action[AnyContent] = Action { implicit request =>
+      Ok(views.html.signUp(signUpFill.userSignUpFormConstraints))
   }
 
   def signUpBinding(): Action[AnyContent] = Action.async {
@@ -25,24 +24,22 @@ class SignUpController @Inject()(userRepository: UserRepository, signUpFill: Sig
       signUpFill.userSignUpFormConstraints.bindFromRequest.fold(
         formWithErrors => {
           Logger.info("SignUp form Error" + formWithErrors)
-          Future.successful(BadRequest(views.html.signup(formWithErrors)))
+          Future.successful(BadRequest(views.html.signUp(formWithErrors)))
         },
         signUpData => {
           Logger.info("New User" + signUpData)
           val checkEmail = userRepository.checkUserIfExist(signUpData.email)
-          checkEmail.flatmap {
+          checkEmail.flatMap {
             case true =>
               Logger.error("User Already Registered")
-              Future.successful(Redirect(routes.SignUpController.signUp())
-                .flashing("error" -> "Your eamil is already Registered"))
-
+              Future.successful(Redirect(routes.SignUpController.signUp()).flashing("error" -> "Your eamil is already Registered"))
             case false =>
-              val newUserData = userRepository.store(UserDb(newUserData.firstName, newUserData.middleName,
-                newUserData.lastName, newUserData.mobileNumber, userData.email, userData.gender,
-                newUserData.password, false, true))
+              val newUserData = userRepository.store(UserDb(0,signUpData.firstName, signUpData.middleName,
+                signUpData.lastName,signUpData.email, signUpData.mobileNumber,  signUpData.gender,
+                signUpData.password, false, true))
 
               newUserData.map {
-                case true => Redirect(routes.CommonController.home()).flashing(
+                case true => Redirect(routes.CommonController.showProfileData()).flashing(
                   "success" -> "You have successfully registered").withSession(
                   "email" -> signUpData.email, "isAdmin" -> "false"
                 )

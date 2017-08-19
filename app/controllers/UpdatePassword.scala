@@ -9,10 +9,10 @@ class UpdatePasswordFill {
   val passwordConstraint = new PasswordConstraint
 
   val updatePasswordForm = Form(mapping(
-    "emailId" -> email,
+    "email" -> email,
     "password" -> nonEmptyText.verifying(passwordConstraint.passwordCheckConstraint),
     "confirmPasssword" -> nonEmptyText.verifying(passwordConstraint.passwordCheckConstraint)
-  )(UpdatePasswordFill.apply)(UpdatePasswordFill.unapply)
+  )(UpdatePassword.apply)(UpdatePassword.unapply)
     .verifying("Passwords do not match", matchPassword =>{
       matchPassword.password == matchPassword.confirmPassword
     }))

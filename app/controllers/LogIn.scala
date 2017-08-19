@@ -14,17 +14,7 @@ class LogInFill {
   )(LogIn.apply)(LogIn.unapply)
   )
 
-  val passwordConstraint = new PasswordConstraint
 
-  val updatePasswordForm = Form(mapping(
-    "email" -> email,
-    "password" -> nonEmptyText.verifying(passwordConstraint.passwordCheckConstraint),
-    "confirmPassword" -> nonEmptyTextp.verifying(passwordConstraint.passwordCheckConstraint)
-  )(UpdatePassword.apply)(UpdatePassword.unapply).verifying("Passwords do not match",
-    matchPassword => {
-      matchPassword.password == matchPassword.confirmPassword
-    }
-  ))
 
 
 }

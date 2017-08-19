@@ -5,7 +5,7 @@ import models.{AssignmentDb, AssignmentRepository,UserRepository}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Controller, Request}
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
@@ -16,15 +16,15 @@ class AdminController @Inject()(userRepository: UserRepository, val messagesApi:
   def listOfUsers(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     request.session.get("email").fold(Future.successful(Redirect(routes.HomeController.index()))) {
       email =>
-        request.session.get("isAdmin") match {
-          case Some("false") =>
+        request.session("isAdmin") match {
+          case "false" =>
             Logger.error(email + "is not an Admin")
-            Future.successful(Redirect(routes.CommonController.home()))
+            Future.successful(Redirect(routes.CommonController.showProfileData()))
           case "true" =>
             val usersList = userRepository.getUsers()
             usersList.map {
               usersList =>
-                Ok(views.html.userList(users))
+                Ok(views.html.userList(usersList))
             }
         }
 
@@ -34,16 +34,16 @@ class AdminController @Inject()(userRepository: UserRepository, val messagesApi:
   def enableDisableUser(email: String, isEnable: Boolean): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       request.session.get("email").fold(
-        Future.successful(Redirect.routes.HomeController.index())) { checkUserRole =>
+        Future.successful(Redirect(routes.HomeController.index()))) { checkUserRole =>
         request.session.get("isAdmin") match {
-          case "false" => Future.successful(Redirect(routes.CommonController.home()))
+          case Some("false") => Future.successful(Redirect(routes.CommonController.showProfileData()))
 
-          case "true" =>
+          case Some("true") =>
             Logger.info("I am an Admin ")
             val mode = userRepository.changeMode(email, !isEnable)
             mode.map {
               case true =>
-                Redirect(routes.AdminControllerr.listOfUsers())
+                Redirect(routes.AdminController.listOfUsers())
 
               case false => Ok("Could Not update changes")
             }
@@ -59,10 +59,11 @@ class AdminController @Inject()(userRepository: UserRepository, val messagesApi:
         Logger.info("Check if user is Admin")
         request.session("isAdmin") match {
           case "false" => Redirect(routes.CommonController.showProfileData())
-          case "true" => Ok(views.html.addAssignment(addAssignmentForm.addAssignmentForm))
+          case "true" => Ok(views.html.addAssignment(assignmentFill.addAssignmentForm))
         }
     }
   }
+
   def addAssignmentBinding(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     request.session.get("email").fold(Future.successful(Redirect(routes.HomeController.index()))) {
       _ =>
@@ -76,7 +77,7 @@ class AdminController @Inject()(userRepository: UserRepository, val messagesApi:
               },
               assignmentInfo=> {
                 Logger.info("Adding assignment")
-                val addAssignment = assignmentRepository.addAssingment(AssignmentDb(assignmentInfo.title,
+                val addAssignment = assignmentRepository.addAssignment(AssignmentDb(assignmentInfo.title,
                   assignmentInfo.description))
                 addAssignment.map {
                   case false => Ok("Something went wrong, Try again")

@@ -4,7 +4,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
-case class SignUp(firstName: String, middleName : String, lastName: String, email : String,
+case class SignUp(firstName: String, middleName : Option[String], lastName: String, email : String,
                       mobileNumber : Long, gender : String, password : String,confirmPassword : String)
 
 class SignUpFill{

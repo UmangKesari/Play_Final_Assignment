@@ -1,5 +1,5 @@
 
-Create TABLE IF NOT EXISTS "user_details" (
+Create TABLE IF NOT EXISTS user_details (
 user_id serial NOT NULL,
 firstname VARCHAR(150) NOT NULL,
 middlename VARCHAR(50) ,
@@ -13,7 +13,7 @@ isEnable BOOLEAN,
 PRIMARY KEY(email)
 );
 
-CREATE TABLE IF NOT EXISTS "assignments"(
+CREATE TABLE IF NOT EXISTS assignments(
 assign_id serial NOT NULL,
 title VARCHAR(200) NOT NULL,
 description TEXT,

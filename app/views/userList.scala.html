@@ -1,4 +1,4 @@
-@(userList : List[UserList]) (implicit messages:Messages,session: play.api.mvc.Session)
+@(userList : List[UserDb]) (implicit messages:Messages,session: play.api.mvc.Session)
 
 @import helper._
 
@@ -7,10 +7,10 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><a href="@routes.CommonController.home()">Profile</a></li>
-            <li><a href="@routes.AdminController.displayUsers()">Users</a></li>
+            <li><a href="@routes.CommonController.showProfileData()">Profile</a></li>
+            <li><a href="@routes.AdminController.listOfUsers()">Users</a></li>
             <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
-            <li><a href="@routes.AdminController.addAssignment()">Add Assignments</a></li>
+            <li><a href="@routes.AdminController.addAssignment()">Add Assignment</a></li>
         </ul>
     </div>
 </nav>
@@ -27,7 +27,6 @@
     @helper.form(action = routes.AdminController.enableDisableUser(user.email,user.isEnable)){
     <td>@user.firstName @user.middleName @user.lastName</td>
     <td>@user.email</td>
-    @if(session("isAdmin")){
     <td>
         <form>
             @if(user.isEnable){
@@ -37,7 +36,6 @@
             }
         </form>
     </td>
-    }
     }
     </tr>
     }

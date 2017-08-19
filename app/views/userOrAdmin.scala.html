@@ -1,4 +1,4 @@
-@(userProfileData: Form[UserProfileFill])(implicit messages:Messages, flash: Flash, session: play.api.mvc.Session)
+@(userProfileData: Form[UserProfile])(implicit messages:Messages, flash: Flash, session: play.api.mvc.Session)
 
 @import helper._
 
@@ -16,14 +16,14 @@
 <div style="background: red">
     @flash.get("success").getOrElse("")
 </div>
-
+}
 <h3>Welcome !</h3>
 @if(session("isAdmin") == "true"){
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><a href="@routes.CommonController.home()">Profile</a></li>
-            <li><a href="@routes.AdminController.displayUsers()">Users</a></li>
+            <li><a href="@routes.CommonController.showProfileData()">Profile</a></li>
+            <li><a href="@routes.AdminController.listOfUsers()">Users</a></li>
             <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
             <li><a href="@routes.AdminController.addAssignment()">Add Assignments</a></li>
         </ul>
@@ -33,10 +33,21 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><a href="@routes.CommonController.home()">Profile</a></li>
+            <li><a href="@routes.CommonController.showProfileData()">Profile</a></li>
             <li><a href="@routes.CommonController.displayAssignments()">Assignments</a></li>
         </ul>
     </div>
 </nav>
 }
 
+@helper.form(action = routes.CommonController.updateProfile()){
+@helper.inputText(userProfileData("firstName"),'_showConstraints->false)
+@helper.inputText(userProfileData("middleName"))
+@helper.inputText(userProfileData("lastName"),'_showConstraints->false)
+@helper.inputText(userProfileData("mobileNumber"),'_showConstraints->false)
+@helper.select(userProfileData("gender"),options = Seq("male"->"male","female"->"female"),'_showConstraints->false)
+
+<button type="submit" formaction="@routes.LogInController.login()">Logout</button>
+}
+
+}
